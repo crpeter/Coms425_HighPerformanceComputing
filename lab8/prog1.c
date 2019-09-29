@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <string.h>
+
+void serMatVec(double** A, double* x, double* y, int n);
+void ompMatVec(double** A, double* x, double* y, int n, int th);
+
+int main(int argc, char* argv[]) {
+ 
+  if (argc < 2) {
+    printf("enter number of threads next time.\n");
+    return -1;
+  }
+  int num_threads;
+  num_threads = strtol(argv[1], NULL, 10);
+  int N = 1000, i, j;
+  double A[N][N]; // = malloc(N * N * sizeof(double));
+  double *help[N], **ptr;
+  ptr = (double **)help;
+  double x[N];
+  double y[N];
+  for (i=0; i < N; i++) {
+    for (j=0; j < N; j++) {
+      A[i][j] = j;
+    }
+    x[i] = i;
+    y[i] = 0.0;
+  }
+  for (i = 0; i < N; i++) 
+    help[i] = (double *)A+ i * N;
+  
+  /*for (i=0; i < N; i++) {
+    for (j=0; j < N; j++) {
+      printf("%f ", *(*(A+i)+j));
+      //printf("%f ", A[i][j]);
+    }
+    printf("\n");
+    }*/
+  
+  /*printf("\n");
+  for (i=0; i < N; i++) {
+    printf("%f\n", x[i]);
+    }*/
+  
+  double totalTime = omp_get_wtime();
+  serMatVec(ptr, x, y, N);
+  printf("seriel time: %f\n", omp_get_wtime() - totalTime);
+  totalTime = omp_get_wtime();
+  ompMatVec(ptr, x, y, N, num_threads);
+  printf("parallel time: %f\n", omp_get_wtime() - totalTime);
+  /*for (i = 0; i < N; i++) {
+    printf("%f\n", y[i]);
+    }*/
+  return 0;
+}
+
+/*void print(double ** A) {
+  int i, j;
+  for (i = 0; i < 
+}*/
+
+void ompMatVec(double** A, double* x, double* y, int n, int th) {
+  int row, col;
+# pragma omp parallel for shared(A, x, y, n) private(row, col) num_threads(th)
+  for (row = 0; row < n; row++) {
+    y[row] = 0.0;
+    //printf("set y %f\n", *(*(A)));                                                     
+    for (col = 0; col < n; col++) {
+      //# pragma omp critical
+      y[row] += A[row][col] * x[col];
+    }
+  }
+}
+
+
+
+void serMatVec(double** A, double* x, double* y, int n) {
+  int row, col;
+  //printf("just in\n");
+  for (row = 0; row < n; row++) {
+    y[row] = 0.0;
+    //printf("set y %f\n", *(*(A)));
+    for (col = 0; col < n; col++) {
+      y[row] += A[row][col] * x[col];
+    }
+  }
+}
