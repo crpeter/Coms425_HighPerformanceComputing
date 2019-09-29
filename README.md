@@ -1,7 +1,7 @@
-Com Sci 425: High Performance Computing for Scientific and Engineering Applications
+##Com Sci 425: High Performance Computing for Scientific and Engineering Applications
 Grade: B+
 
-Repo contains labs focusing on:
+##Repo contains labs focusing on:
 Performance measures: speedup, efficiency, scalability
 Models of parallel computation and basic communication primitives
 Parallel prefix and applications
@@ -11,5 +11,5 @@ Parallel graph algorithms
 Parallel programming with OpenMP
 Parallel programming with MPI
 
-Final Project:
+##Final Project:
 Custom implementation of parallel SVD
